@@ -1,0 +1,98 @@
+<!-- Event Planner Website -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Planner</title>
+    <link rel="manifest" href="manifest.json">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        .container {
+            max-width: 400px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .event-list {
+            margin-top: 20px;
+            text-align: left;
+        }
+        .event-item {
+            background: #fff;
+            padding: 10px;
+            margin: 5px 0;
+            border-left: 5px solid #28a745;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .completed {
+            text-decoration: line-through;
+            color: gray;
+            border-left-color: gray;
+        }
+    </style>
+</head>
+<body onload="loadEvents()">
+    <div class="container">
+        <h2>Event Planner</h2>
+        <input type="text" id="eventName" placeholder="Event Name">
+        <input type="date" id="eventDate">
+        <button onclick="addEvent()">Add Event</button>
+        <div class="event-list" id="eventList"></div>
+    </div>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('service-worker.js').then(() => {
+                console.log('Service Worker Registered');
+            });
+        }
+    </script>
+    
+    <script>
+        self.addEventListener("install", (event) => {
+            event.waitUntil(
+                caches.open("event-planner-cache").then((cache) => {
+                    return cache.addAll([
+                        "index.html",
+                        "manifest.json",
+                        "service-worker.js",
+                        "icon-192x192.png",
+                        "icon-512x512.png"
+                    ]);
+                })
+            );
+        });
+
+        self.addEventListener("fetch", (event) => {
+            event.respondWith(
+                caches.match(event.request).then((response) => {
+                    return response || fetch(event.request);
+                })
+            );
+        });
+    </script>
+</body>
+</html>
